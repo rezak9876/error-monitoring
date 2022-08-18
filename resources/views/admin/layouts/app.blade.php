@@ -76,10 +76,10 @@
                         <use xlink:href="/coreui/vendors/@coreui/icons/svg/free.svg#cil-speedometer"></use>
                     </svg> Dashboard<span class="badge badge-sm bg-info ms-auto">NEW</span></a></li>
             <li class="nav-title">Theme</li>
-            <li class="nav-item"><a class="nav-link" href="/coreui/colors.html">
+            <li class="nav-item"><a class="nav-link" href="{{ route('projects.index') }}">
                     <svg class="nav-icon">
                         <use xlink:href="/coreui/vendors/@coreui/icons/svg/free.svg#cil-drop"></use>
-                    </svg> Colors</a></li>
+                    </svg> projects</a></li>
             <li class="nav-item"><a class="nav-link" href="/coreui/typography.html">
                     <svg class="nav-icon">
                         <use xlink:href="/coreui/vendors/@coreui/icons/svg/free.svg#cil-pencil"></use>
