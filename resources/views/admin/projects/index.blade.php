@@ -21,32 +21,35 @@
     <div class="mb-3">
         <a class="btn btn-primary" href="{{ route('projects.create') }}">create</a>
     </div>
-    <div class="table-responsive">
-        <table class="table border mb-0">
-            <thead class="table-light fw-semibold">
-                <tr class="align-middle">
-                    <th>Projecs</th>
-                    <th>Errors Count</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($projects as $project)
+    @if ($projects->isNotEmpty())
+        <div class="table-responsive">
+            <table class="table border mb-0">
+                <thead class="table-light fw-semibold">
                     <tr class="align-middle">
-                        <td>
-                            <div><a href="{{ route('systems.index', $project->id) }}">{{ $project->title }}</a></div>
-                        </td>
-                        <td>
-                            @if ($project->errorsCount())
-                                <button type="button"
-                                    class="btn btn-primary rounded-pill">{{ $project->errorsCount() }}</button>
-                            @endif
-                        </td>
+                        <th>Projecs</th>
+                        <th>Errors Count</th>
                     </tr>
-
-                @empty
-                    <p>No Project</p>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                    @foreach ($projects as $project)
+                        <tr class="align-middle">
+                            <td>
+                                <div><a
+                                        href="{{ route('systems.index', ['filter_project_id' => $project->id]) }}">{{ $project->title }}</a>
+                                </div>
+                            </td>
+                            <td>
+                                @if ($project->errorsCount())
+                                    <button type="button"
+                                        class="btn btn-primary rounded-pill">{{ $project->errorsCount() }}</button>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @else
+        <p>No Project</p>
+    @endif
 @endsection

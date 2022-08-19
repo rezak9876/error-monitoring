@@ -30,11 +30,11 @@ Route::middleware(['auth'])->group( function () {
     Route::resource('/projects', ProjectController::class);
 
 
-    Route::get('/{project}/systems', [SystemController::class, 'index'])->name('systems.index');
+    Route::get('/systems', [SystemController::class, 'index'])->name('systems.index');
     Route::get('/systems/{system}', [SystemController::class, 'edit'])->name('systems.edit');
     Route::put('/systems/{system}', [SystemController::class, 'update'])->name('systems.update');
 
-    Route::get('/{project}/{system}/errors', [ErrorController::class, 'index'])->name('errors.index');
+    Route::get('/errors', [ErrorController::class, 'index'])->name('errors.index');
 
     Route::delete('/errors/{error}', [ErrorController::class, 'destroy'])->name('errors.destroy');
     Route::get('/errors/{error}', [ErrorController::class, 'show'])->name('errors.show');

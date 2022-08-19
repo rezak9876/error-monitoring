@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\System;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SystemController extends Controller
 {
@@ -14,10 +15,22 @@ class SystemController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Project $project)
+    public function index()
     {
-        $this->authorize('view', $project);
-        $systems = $project->systems()->orderBy('id', 'DESC')->get();
+        // $this->authorize('view', $project);
+        $systems = System::whereHas('project', function ($query) {
+            $query->where('user_id', Auth::id());
+        });
+
+
+        foreach ($_GET as $key => $get) {
+            if (substr($key, 0, strlen('filter_')) === 'filter_') {
+                $property = str_replace('filter_', '', $key);
+
+                $systems->where($property, $get);
+            }
+        }
+        $systems = $systems->orderBy('id', 'DESC')->get();
         return view('admin.systems.index', compact('systems'));
     }
 
@@ -73,7 +86,7 @@ class SystemController extends Controller
     public function update(Request $request, System $system)
     {
         $system->update($request->all());
-        return redirect()->back()->with('message', 'error deleted!');;
+        return redirect(route('systems.index'))->with('message', 'error deleted!');;
     }
 
     /**

@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Models\RepError;
 use App\Models\System;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
@@ -17,20 +18,40 @@ class ErrorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Project $project, System $system)
+    public function index()
     {
-        $this->authorize('view', $system);
 
-        $errorsCountSort = request()->query('errorsCountSort');
-        $LanguageSort = request()->query('LanguageSort');
+        $errors = RepError::selectRaw('errors.* , count(errors.id) as errorsCount')
+            ->join('error_system', 'errors.id', '=', 'error_system.error_id')
+            ->join('systems', 'systems.id', '=', 'error_system.system_id')
+            ->join('projects', 'projects.id', '=', 'systems.project_id')
+            ->where('projects.user_id', Auth::id())
+            ->groupBy('errors.id');
 
-        $errors = $system->errors()->selectRaw('count(*) as errorsCount')->groupBy('errors.id');
+        if ($system_id = request()->query('filter_system_id')) {
+            $errors->where('systems.id', $system_id);
+            unset($_GET['filter_system_id']);
+        }
+
+        // foreach ($_GET as $key => $get) {
+        //     if (substr($key, 0, strlen('filter_')) === 'filter_') {
+        //         $property = str_replace('filter_', '', $key);
+        //         $errors->where($property, $get);
+        //     }
+        // }
+
 
         $queryParams = array_reverse($_GET);
-        unset($queryParams['page']);
         foreach ($queryParams as $key => $queryParam) {
-            $errors = $errors->orderBy(substr($key, 0, -4), $queryParam);
+            if (substr($key, 0, strlen('sort_')) === 'sort_') {
+                $key = str_replace('sort_', '', $key);
+                $errors = $errors->orderBy($key, $queryParam);
+            }
         }
+
+
+
+
         $errors = $errors->orderBy('errors.id', 'DESC');
 
 
@@ -38,33 +59,35 @@ class ErrorController extends Controller
         $errors = $errors->paginate(10);
 
 
-        switch ($errorsCountSort) {
+        $sort_errorsCount = request()->query('sort_errorsCount');
+        $sort_language = request()->query('sort_language');
+        switch ($sort_errorsCount) {
             case 'asc':
-                $nextErrorsCountSort = 'desc';
+                $nextsort_errorsCount = 'desc';
                 break;
             case 'desc':
-                $nextErrorsCountSort = 'asc';
+                $nextsort_errorsCount = 'asc';
                 break;
             default:
-                $nextErrorsCountSort = 'desc';
+                $nextsort_errorsCount = 'desc';
                 break;
         }
 
-        switch ($LanguageSort) {
+        switch ($sort_language) {
             case 'asc':
-                $nextLanguageSort = 'desc';
+                $nextsort_language = 'desc';
                 break;
             case 'desc':
-                $nextLanguageSort = 'asc';
+                $nextsort_language = 'asc';
                 break;
             default:
-                $nextLanguageSort = 'desc';
+                $nextsort_language = 'desc';
                 break;
         }
 
         $sort = [
-            'errorCount' => $nextErrorsCountSort,
-            'languageSort' => $nextLanguageSort,
+            'errorCount' => $nextsort_errorsCount,
+            'sort_language' => $nextsort_language,
         ];
         return view('admin.errors.index', compact('errors', 'sort'));
     }
@@ -88,6 +111,10 @@ class ErrorController extends Controller
     public function store(String $token, Request $request)
     {
         $project = Project::where('token', $token)->first();
+
+        if (is_null($project))
+            return 'token_is_invalid';
+
 
         $systemValues = $this->getArrayByPrefix('systems_', $request->all());
 
