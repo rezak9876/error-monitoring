@@ -17,4 +17,9 @@ class RepError extends Model
         'Line',
         'Trace'
     ];
+
+    public function systems()
+    {
+        return $this->belongsToMany(System::class, 'error_system',  'error_id', 'system_id');
+    }
 }

@@ -7,6 +7,8 @@ use App\Models\Project;
 use App\Models\RepError;
 use App\Models\System;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class ErrorController extends Controller
 {
@@ -15,10 +17,36 @@ class ErrorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Project $project,System $system)
+    public function index(Project $project, System $system)
     {
-        $errors = $system->errors()->selectRaw('count(*) as count')->groupBy('id')->orderBy('id','DESC')->paginate(2);
-        return view('admin.errors.index', compact('errors'));
+        $errorsCountSort = request()->query('errorsCountSort');
+
+        $errors = $system->errors()->selectRaw('count(*) as count')->groupBy('id');
+        if (!is_null($errorsCountSort))
+            $errors = $errors->orderBy('count', $errorsCountSort);
+        else
+            $errors = $errors->orderBy('id', 'DESC');
+
+
+        $errors = $errors->paginate(10);
+
+
+        switch ($errorsCountSort) {
+            case 'asc':
+                $nextErrorsCountSort = 'desc';
+                break;
+            case 'desc':
+                $nextErrorsCountSort = 'asc';
+                break;
+            default:
+                $nextErrorsCountSort = 'desc';
+                break;
+        }
+
+        $sort = [
+            'errorCount' => $nextErrorsCountSort
+        ];
+        return view('admin.errors.index', compact('errors', 'sort'));
     }
 
     /**
@@ -37,7 +65,7 @@ class ErrorController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(String $token,Request $request)
+    public function store(String $token, Request $request)
     {
         $project = Project::where('token', $token)->first();
 
@@ -122,7 +150,7 @@ class ErrorController extends Controller
             "created_at" => $error->created_at->format('Y-m-d H:i:s'),
             "updated_at" => $error->updated_at->format('Y-m-d H:i:s')
         ];
-        dd($result  );
+        dd($result);
     }
 
     /**
@@ -154,8 +182,15 @@ class ErrorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(RepError $error)
     {
-        //
+        $error->delete();
+        return redirect()->back()->with('message', 'error deleted!');;
+    }
+    public function groupDelete(Request $request)
+    {
+        $errors_id = $request->input('data')['errors_id'];
+        DB::table("errors")->whereIn('id', $errors_id)->delete();
+        Session::flash('message', 'errors deleted!');
     }
 }

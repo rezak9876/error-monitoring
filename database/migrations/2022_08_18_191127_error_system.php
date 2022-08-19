@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
 
             $table->unsignedBigInteger('error_id');
-            $table->foreign('error_id')->references('id')->on('errors');
+            $table->foreign('error_id')->references('id')->on('errors')->onDelete('cascade');
             
 
             $table->unsignedBigInteger('system_id');

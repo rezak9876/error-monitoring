@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Project extends Model
 {
@@ -21,5 +22,17 @@ class Project extends Model
     public function systems()
     {
         return $this->hasMany(System::class);
+    }
+
+    public function errors()
+    {
+        return RepError::whereHas('systems', function (Builder $query) {
+            $query->where('project_id',$this->id);
+        })->get();
+    }
+    
+    public function errorsCount()
+    {
+        return $this->errors()->count();
     }
 }
