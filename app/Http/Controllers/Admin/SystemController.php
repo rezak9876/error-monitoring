@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Project;
+use App\Models\System;
 use Illuminate\Http\Request;
 
 class SystemController extends Controller
@@ -15,7 +16,7 @@ class SystemController extends Controller
      */
     public function index(Project $project)
     {
-        $systems = $project->systems()->orderBy('id','DESC')->get();
+        $systems = $project->systems()->orderBy('id', 'DESC')->get();
         return view('admin.systems.index', compact('systems'));
     }
 
@@ -46,9 +47,9 @@ class SystemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(System $system)
     {
-        //
+        
     }
 
     /**
@@ -57,9 +58,9 @@ class SystemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(System $system)
     {
-        //
+        return view('admin.systems.edit', compact('system'));
     }
 
     /**
@@ -69,9 +70,10 @@ class SystemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, System $system)
     {
-        //
+        $system->update($request->all());
+        return redirect()->back()->with('message', 'error deleted!');;
     }
 
     /**

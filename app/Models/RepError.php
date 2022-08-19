@@ -11,6 +11,7 @@ class RepError extends Model
 
     protected $table = 'errors';
     protected $fillable = [
+        'Language',
         'Message',
         'Code',
         'File',

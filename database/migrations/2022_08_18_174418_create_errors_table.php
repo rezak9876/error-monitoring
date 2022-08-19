@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('errors', function (Blueprint $table) {
             $table->id();
+            $table->enum('language',['php','javascript']);
             $table->string('message');
             $table->unsignedTinyInteger('code');
             $table->string('file');

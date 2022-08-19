@@ -1,3 +1,6 @@
+@php
+use App\Http\Helper\Url;
+@endphp
 @extends('admin.layouts.app')
 
 @section('body')
@@ -26,8 +29,11 @@
             <thead class="table-light fw-semibold">
                 <tr class="align-middle">
                     <th>Errors</th>
-                    <th><a href="{{ request()->fullUrlWithQuery(['errorsCountSort' => $sort['errorCount']]) }}">Errors
+                    <th><a href="{{ Url::addParamToEndOfUrl('errorsCountSort', $sort['errorCount']) }}">Errors
                             Count</a></th>
+                    <th><a href="{{ Url::addParamToEndOfUrl('LanguageSort', $sort['languageSort']) }}">Language</a>
+                    </th>
+                    <th>Language</th>
                     <th>Delete</th>
                     <th>#</th>
                 </tr>
@@ -40,9 +46,13 @@
                             </div>
                         </td>
                         <td>
-                            @if ($error->count)
-                                <button type="button" class="btn btn-primary rounded-pill">{{ $error->count }}</button>
+                            @if ($error->errorsCount)
+                                <button type="button"
+                                    class="btn btn-primary rounded-pill">{{ $error->errorsCount }}</button>
                             @endif
+                        </td>
+                        <td>
+                            {{ $error->language }}
                         </td>
                         <td>
                             <form action="{{ route('errors.destroy', $error->id) }}" method="post">

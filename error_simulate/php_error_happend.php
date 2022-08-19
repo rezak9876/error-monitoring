@@ -39,6 +39,7 @@ set_error_handler(function ($errno, $errstr, $errfile, $errline) use ($basePath)
 
             //error information array
             $error_array = [
+                'errorlanguage' => 'php',
                 'errorMessage' => $errstr,
                 'errorCode' => $errno,
                 'errorFile' => str_replace($basePath, "basePath", $errfile),
@@ -80,14 +81,14 @@ set_error_handler(function ($errno, $errstr, $errfile, $errline) use ($basePath)
     }
 });
 
-echo $f;
-// echo $g;
-// echo $h;
-// echo $h;
-// echo $h;
-// echo $h;
-// echo $h;
-// echo $h;
+echo $hihp;
+echo $g;
+echo $h;
+echo $h;
+echo $h;
+echo $h;
+echo $h;
+echo $h;
 // echo $h;
 // echo $h;
 // echo $h;

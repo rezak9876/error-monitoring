@@ -20,12 +20,15 @@ class ErrorController extends Controller
     public function index(Project $project, System $system)
     {
         $errorsCountSort = request()->query('errorsCountSort');
+        $LanguageSort = request()->query('LanguageSort');
 
-        $errors = $system->errors()->selectRaw('count(*) as count')->groupBy('id');
-        if (!is_null($errorsCountSort))
-            $errors = $errors->orderBy('count', $errorsCountSort);
-        else
-            $errors = $errors->orderBy('id', 'DESC');
+        $errors = $system->errors()->selectRaw('count(*) as errorsCount')->groupBy('errors.id');
+
+        foreach (array_reverse($_GET) as $key => $queryParam) {
+            $errors = $errors->orderBy(substr($key, 0, -4), $queryParam);
+        }
+        $errors = $errors->orderBy('errors.id', 'DESC');
+
 
 
         $errors = $errors->paginate(10);
@@ -43,8 +46,21 @@ class ErrorController extends Controller
                 break;
         }
 
+        switch ($LanguageSort) {
+            case 'asc':
+                $nextLanguageSort = 'desc';
+                break;
+            case 'desc':
+                $nextLanguageSort = 'asc';
+                break;
+            default:
+                $nextLanguageSort = 'desc';
+                break;
+        }
+
         $sort = [
-            'errorCount' => $nextErrorsCountSort
+            'errorCount' => $nextErrorsCountSort,
+            'languageSort' => $nextLanguageSort,
         ];
         return view('admin.errors.index', compact('errors', 'sort'));
     }
@@ -71,17 +87,26 @@ class ErrorController extends Controller
 
         $systemValues = $this->getArrayByPrefix('systems_', $request->all());
 
-        $system = System::where($systemValues)->first();
+        $system = System::where('domain', $systemValues['domain'])->first();
 
         if (is_null($system))
             $system = $project->systems()->create($systemValues);
 
+        switch ($request->input('errorlanguage')) {
+            case 'javascript':
+                $trace = json_encode($request->input('errorTrace'));
+                break;
+            case 'php':
+                $trace = $request->input('errorTrace');
+        }
+
         $error_array = [
+            'Language' => $request->input('errorlanguage'),
             'Message' => $request->input('errorMessage'),
             'Code' => $request->input('errorCode'),
             'File' => $request->input('errorFile'),
             'Line' => $request->input('errorLine'),
-            'Trace' => $request->input('errorTrace'),
+            'Trace' => $trace,
         ];
 
 
@@ -140,13 +165,21 @@ class ErrorController extends Controller
      */
     public function show(RepError $error)
     {
+        switch ($error->language) {
+            case 'javascript':
+                $trace = str_replace('\/', '/', $error->trace);
+                $trace = explode('\n', $trace);
+                break;
+            case 'php':
+                $trace = json_decode($error->trace);
+        }
         $result = [
             "id" => $error->id,
             "message" => $error->message,
             "code" => $error->code,
             "file" => $error->file,
             "line" => $error->line,
-            "trace" => json_decode($error->trace),
+            "trace" => $trace,
             "created_at" => $error->created_at->format('Y-m-d H:i:s'),
             "updated_at" => $error->updated_at->format('Y-m-d H:i:s')
         ];

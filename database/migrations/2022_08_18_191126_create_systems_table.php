@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('title')->nullable();
             $table->string('domain');
-            $table->string('dbName');
+            $table->string('dbName')->nullable();
 
             $table->unsignedBigInteger('project_id');
             $table->foreign('project_id')->references('id')->on('projects');

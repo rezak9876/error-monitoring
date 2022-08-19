@@ -12,7 +12,7 @@ class System extends Model
 
 
     protected $fillable = [
-        'domain', 'dbName'
+        'title', 'domain', 'dbName'
     ];
 
     public function errors()
@@ -25,5 +25,15 @@ class System extends Model
         return RepError::whereHas('systems', function (Builder $query) {
             $query->where('systems.id', $this->id);
         })->get()->count();
+    }
+
+    public function getTitleShow()
+    {
+        $domain = $this->domain;
+        if ($this->title)
+            return $this->title;
+        if ($this->dbName)
+            return $this->dbName;
+        return substr($domain, strpos($domain, '//') + 2);
     }
 }
