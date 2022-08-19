@@ -16,7 +16,7 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = Project::orderBy('id','DESC')->get();
+        $projects = Auth::user()->projects()->orderBy('id', 'DESC')->get();
         return view('admin.projects.index', compact('projects'));
     }
 
@@ -41,7 +41,6 @@ class ProjectController extends Controller
         $project = new Project();
         Auth::user()->projects()->create([
             'title' => $request->input('title'),
-            'language' => $request->input('language'),
             'token' => bin2hex(random_bytes(20)),
         ]);
 

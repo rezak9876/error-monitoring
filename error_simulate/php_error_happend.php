@@ -57,7 +57,7 @@ set_error_handler(function ($errno, $errstr, $errfile, $errline) use ($basePath)
             $ch = curl_init();
 
             // set url
-            curl_setopt($ch, CURLOPT_URL, "http://domain.test/api/a2918bf3b6d6867d96385add0a8cc5042f35a4e6/errors");
+            curl_setopt($ch, CURLOPT_URL, "http://domain.test/api/a2d7ac110a59d70ddf41459184efd812046a59fe/errors");
 
             //return the transfer as a string
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

@@ -19,6 +19,11 @@ class Project extends Model
     //     return $this->belongsToMany(RepError::class, 'error_project', 'project_id', 'error_id')->withPivot('count');
     // }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function systems()
     {
         return $this->hasMany(System::class);
@@ -27,10 +32,10 @@ class Project extends Model
     public function errors()
     {
         return RepError::whereHas('systems', function (Builder $query) {
-            $query->where('project_id',$this->id);
+            $query->where('project_id', $this->id);
         })->get();
     }
-    
+
     public function errorsCount()
     {
         return $this->errors()->count();

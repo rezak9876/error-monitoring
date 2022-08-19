@@ -16,27 +16,32 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::redirect('/', '/projects');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+Route::middleware(['auth'])->group( function () {
+
+    Route::redirect('/', '/projects');
+
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->middleware(['auth'])->name('dashboard');
+
+
+
+    Route::resource('/projects', ProjectController::class);
+
+
+    Route::get('/{project}/systems', [SystemController::class, 'index'])->name('systems.index');
+    Route::get('/systems/{system}', [SystemController::class, 'edit'])->name('systems.edit');
+    Route::put('/systems/{system}', [SystemController::class, 'update'])->name('systems.update');
+
+    Route::get('/{project}/{system}/errors', [ErrorController::class, 'index'])->name('errors.index');
+
+    Route::delete('/errors/{error}', [ErrorController::class, 'destroy'])->name('errors.destroy');
+    Route::get('/errors/{error}', [ErrorController::class, 'show'])->name('errors.show');
+    Route::post('/errors/groupDelete', [ErrorController::class, 'groupDelete'])->name('errors.groupDelete');
+});
 
 require __DIR__ . '/auth.php';
-
-
-Route::resource('/projects', ProjectController::class);
-
-
-Route::get('/{project}/systems', [SystemController::class, 'index'])->name('systems.index');
-Route::get('/systems/{system}', [SystemController::class, 'edit'])->name('systems.edit');
-Route::put('/systems/{system}', [SystemController::class, 'update'])->name('systems.update');
-
-Route::get('/{project}/{system}/errors', [ErrorController::class, 'index'])->name('errors.index');
-
-Route::delete('/errors/{error}', [ErrorController::class, 'destroy'])->name('errors.destroy');
-Route::get('/errors/{error}', [ErrorController::class, 'show'])->name('errors.show');
-Route::post('/errors/groupDelete', [ErrorController::class, 'groupDelete'])->name('errors.groupDelete');
 
 
 Route::get('/php_error-simulating', function () {

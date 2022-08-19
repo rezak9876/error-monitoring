@@ -16,6 +16,7 @@ class SystemController extends Controller
      */
     public function index(Project $project)
     {
+        $this->authorize('view', $project);
         $systems = $project->systems()->orderBy('id', 'DESC')->get();
         return view('admin.systems.index', compact('systems'));
     }
@@ -49,7 +50,6 @@ class SystemController extends Controller
      */
     public function show(System $system)
     {
-        
     }
 
     /**

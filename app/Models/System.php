@@ -20,6 +20,15 @@ class System extends Model
         return $this->belongsToMany(RepError::class, 'error_system', 'system_id', 'error_id');
     }
 
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+    public function user()
+    {
+        return $this->project->user();
+    }
+
     public function errorsCount()
     {
         return RepError::whereHas('systems', function (Builder $query) {

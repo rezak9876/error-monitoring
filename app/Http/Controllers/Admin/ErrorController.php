@@ -19,12 +19,16 @@ class ErrorController extends Controller
      */
     public function index(Project $project, System $system)
     {
+        $this->authorize('view', $system);
+
         $errorsCountSort = request()->query('errorsCountSort');
         $LanguageSort = request()->query('LanguageSort');
 
         $errors = $system->errors()->selectRaw('count(*) as errorsCount')->groupBy('errors.id');
 
-        foreach (array_reverse($_GET) as $key => $queryParam) {
+        $queryParams = array_reverse($_GET);
+        unset($queryParams['page']);
+        foreach ($queryParams as $key => $queryParam) {
             $errors = $errors->orderBy(substr($key, 0, -4), $queryParam);
         }
         $errors = $errors->orderBy('errors.id', 'DESC');
@@ -87,7 +91,7 @@ class ErrorController extends Controller
 
         $systemValues = $this->getArrayByPrefix('systems_', $request->all());
 
-        $system = System::where('domain', $systemValues['domain'])->first();
+        $system = $project->systems()->where('domain', $systemValues['domain'])->first();
 
         if (is_null($system))
             $system = $project->systems()->create($systemValues);
