@@ -3,9 +3,7 @@
 /public/hot
 /public/storage
 /storage/*.key
-/vendor/*
-!/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php
-!*/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php
+/vendor
 .env
 .env.backup
 .phpunit.result.cache
