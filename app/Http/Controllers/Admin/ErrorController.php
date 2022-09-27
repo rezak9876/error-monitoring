@@ -170,8 +170,6 @@ class ErrorController extends Controller
 
 
         return true;
-
-        dd($error_array);
     }
 
 

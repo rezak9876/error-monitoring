@@ -12,7 +12,7 @@ class System extends Model
 
 
     protected $fillable = [
-        'title', 'domain', 'dbName'
+        'title', 'domain', 'app_name'
     ];
 
     public function errors()
@@ -41,8 +41,8 @@ class System extends Model
         $domain = $this->domain;
         if ($this->title)
             return $this->title;
-        if ($this->dbName)
-            return $this->dbName;
+        if ($this->app_name)
+            return $this->app_name;
         return substr($domain, strpos($domain, '//') + 2);
     }
 }
