@@ -34,14 +34,21 @@
                     @foreach ($projects as $project)
                         <tr class="align-middle">
                             <td>
-                                <div><a
-                                        href="{{ route('systems.index', ['filter_project_id' => $project->id]) }}">{{ $project->title }}</a>
-                                </div>
+                                <div><a href="{{ route('projects.show', $project->id) }}">
+                                        {{ $project->title }}</a></div>
                             </td>
                             <td>
                                 @if ($project->errorsCount())
-                                    <button type="button"
-                                        class="btn btn-primary rounded-pill">{{ $project->errorsCount() }}</button>
+                                    <a href="{{ route('systems.index', ['filter_project_id' => $project->id]) }}">
+
+                                        <button type="button" class="btn btn-primary rounded-pill">
+
+
+
+                                            {{ $project->errorsCount() }}
+
+                                        </button>
+                                    </a>
                                 @endif
                             </td>
                         </tr>
