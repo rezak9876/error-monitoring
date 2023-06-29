@@ -137,12 +137,12 @@ class ErrorController extends Controller
             'Code' => $request->input('errorCode'),
             'File' => $request->input('errorFile'),
             'Line' => $request->input('errorLine'),
-            'Trace' => $trace,
         ];
 
 
         $repError = RepError::where($error_array)->first();
 
+        $error_array['Trace'] = $trace;
         if (is_null($repError))
             $repError = RepError::create($error_array);
 
